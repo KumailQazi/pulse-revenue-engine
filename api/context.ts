@@ -1,6 +1,7 @@
 import type { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
 import type { User } from "@db/schema";
 import { authenticateRequest } from "./oauth/auth";
+import { env } from "./lib/env";
 
 export type TrpcContext = {
   req: Request;
@@ -15,7 +16,20 @@ export async function createContext(
   try {
     ctx.user = await authenticateRequest(opts.req.headers);
   } catch {
-    // Authentication is optional here
+    // In Demo Mode, if auth fails, we provide a mock user
+    if (env.isDemoMode) {
+      ctx.user = {
+        id: 0,
+        unionId: "demo-user",
+        name: "Demo Operator",
+        email: "demo@pulse.engine",
+        avatar: "",
+        role: "admin",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        lastSignInAt: new Date(),
+      };
+    }
   }
   return ctx;
 }
