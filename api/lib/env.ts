@@ -1,19 +1,17 @@
 import "dotenv/config";
 
-function required(name: string): string {
+function getEnv(name: string, defaultValue: string = ""): string {
   const value = process.env[name];
-  if (!value && process.env.NODE_ENV === "production") {
-    throw new Error(`Missing required environment variable: ${name}`);
-  }
-  return value ?? "";
+  return value ?? defaultValue;
 }
 
 export const env = {
-  appId: required("APP_ID"),
-  appSecret: required("APP_SECRET"),
+  appId: getEnv("APP_ID", "pulse-demo-id"),
+  appSecret: getEnv("APP_SECRET", "pulse-demo-secret"),
   isProduction: process.env.NODE_ENV === "production",
-  databaseUrl: required("DATABASE_URL"),
-  oauthServerUrl: required("OAUTH_SERVER_URL"),
-  oauthApiUrl: required("OAUTH_API_URL"),
-  ownerUnionId: process.env.OWNER_UNION_ID ?? "",
+  databaseUrl: getEnv("DATABASE_URL", ""),
+  oauthServerUrl: getEnv("OAUTH_SERVER_URL", ""),
+  oauthApiUrl: getEnv("OAUTH_API_URL", ""),
+  ownerUnionId: getEnv("OWNER_UNION_ID", "admin"),
+  isDemoMode: !process.env.APP_ID || !process.env.DATABASE_URL,
 };
